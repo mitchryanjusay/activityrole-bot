@@ -1,4 +1,5 @@
 {
+    "alias": { },
     "createRoles": false,
     "ignoreUnverifiedActivities": true
 }
