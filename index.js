@@ -1,7 +1,7 @@
 const config = require("./config.json");
 const package = require("./package.json");
 
-const discord = require("discord.js");  // , discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MEMBERS, 
+const discord = require("discord.js");  // , discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MEMBERS,
 const chalk = require("chalk");
 const bot = new discord.Client({ intents: [discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_PRESENCES]});
 
@@ -12,7 +12,7 @@ const token = process.env.ACCESS_TOKEN || config.token;
 const commands = [{
   name: 'version',
   description: 'Outputs the current bot version'
-}]; 
+}];
 
 const rest = new REST({ version: '9' }).setToken(token);
 
@@ -21,12 +21,12 @@ const rest = new REST({ version: '9' }).setToken(token);
 bot.on("ready", async () => {
     try {
         //console.log('Started refreshing application (/) commands.');
-    
+
         await rest.put(
         Routes.applicationCommands(bot.user.id),
         { body: commands },
         );
-    
+
         //console.log('Successfully reloaded application (/) commands.');
     } catch (error) {
         console.error(error);
@@ -41,7 +41,7 @@ chalk`REVIEW your Security Settings::
 if (config.ignoreUnverifiedActivities)
 console.log(
 chalk`* The bot will ignore all activities that are not {blueBright.bold verified}.`);
-else 
+else
 console.log(
 chalk`* The bot will process all activities, regardless of wether they're {blueBright.bold verified}.
 {red [WARNING]} this might allow members to get/create {redBright infinite/arbritrary} roles using the {yellow.bold "ACTIVITY SETTINGS > ACTIVITY STATUS"} Options in the discord settings`);
@@ -62,7 +62,7 @@ bot.on("interactionCreate", async (interaction) => {
 bot.on("presenceUpdate", async (prev, now) => {
     console.log(chalk`{blueBright ${now.user.username+"#"+now.user.discriminator}} is now playing {yellow ${now.activities.map((activity) => activity.name)}} {grey (${now.activities.length})} {grey [${now.member.guild.name}]} `)
 
-    if(now.member.manageable) {
+    //if(now.member.manageable) {
         if(prev) {
             var prevAct = config.ignoreUnverifiedActivities ? prev.activities.filter(act => act.applicationId != null) : prev.activities;
             var prevName= prevAct.map(act => act.name);
@@ -70,7 +70,7 @@ bot.on("presenceUpdate", async (prev, now) => {
             var prevAct = [];
             var prevName = [];
         }
-        
+
 
         var nowAct = config.ignoreUnverifiedActivities ? now.activities.filter(act => act.applicationId != null) : now.activities;
         var nowName= nowAct.map(act => act.name);
@@ -80,7 +80,7 @@ bot.on("presenceUpdate", async (prev, now) => {
             var a = nowName[i];
             var role = await pickRole(now.member.guild, a);
             if (role == null) continue;
-            now.member.roles.add(role , "Started Playing Game"); 
+            now.member.roles.add(role , "Started Playing Game");
         }
 
         //remove roles for ended activities
@@ -89,12 +89,12 @@ bot.on("presenceUpdate", async (prev, now) => {
             if(!nowName.includes(a)) {
                 var role = await pickRole(now.member.guild, a, false);
                 if (role == null) continue;
-                now.member.roles.remove(role , "Stopped Playing Game"); 
+                now.member.roles.remove(role , "Stopped Playing Game");
             }
         }
-    } else {
-        console.log(chalk.red("   -> member is more priviledged than bot -> cant assign role"))
-    }
+    //} else {
+    //    console.log(chalk.red("   -> member is more priviledged than bot -> cant assign role"))
+    //}
 });
 
 
@@ -105,7 +105,7 @@ bot.login(token).catch((reason) => {
 chalk`--------------------
 Please go to {blueBright https://discord.com/developers/applications/},
 click your app, click {bold.yellow 'Bot'} and make sure that {bold.yellow 'Presence Intent'} is enabled
-You can find it under the Section {bold.yellow 'Privileged Gateway Intents'}  
+You can find it under the Section {bold.yellow 'Privileged Gateway Intents'}
 
 You'll have to apply for bot verification if you plan to serve more than 100 servers.`);
     }
@@ -126,14 +126,14 @@ Finally, paste it into {blueBright ./config.json} or set it as Enviroment Variab
 
 //FUNCTIONS
 /**
- * 
- * @param {discord.Guild} guild 
- * @param {*} name 
- * @returns 
+ *
+ * @param {discord.Guild} guild
+ * @param {*} name
+ * @returns
  */
 async function pickRole(guild, name, ass=true) {
     //console.log("pick role for "+name)
-    //role to be created 
+    //role to be created
     var desiredRolename = config.alias[name] || name;
 
     await guild.roles.fetch();
@@ -142,7 +142,7 @@ async function pickRole(guild, name, ass=true) {
     });
 
     if (role == null) { // create role
-        if(!config.createRoles) { 
+        if(!config.createRoles) {
             console.log(chalk`  {yellow / role} "${desiredRolename}" {grey (Moderator must create this role first - security setting)}`)
             return null
         };
